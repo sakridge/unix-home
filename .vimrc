@@ -1,6 +1,4 @@
 syn on
-set tabstop=3
-set shiftwidth=3
 set expandtab
 set shellslash
 colorscheme wombat
@@ -16,7 +14,6 @@ set smartcase
 set scrolloff=2
 set wildmode=longest,list
 set incsearch
-set softtabstop=3
 set smarttab
 filetype plugin indent on
 
