@@ -1,7 +1,15 @@
 [user]
-	name = Stephen Akridge
-	email = sakridge@gmail.com
+   name = Stephen Akridge
+   email = sakridge@gmail.com
 [color]
-	ui = auto
+   ui = auto
 [core]
    excludesfile = ~/.gitignore_global
+[alias]
+   tree=log --graph --decorate --pretty=format:'%h was %ae, %ar, message: %s' --abbrev-commit
+   d=difftool
+[diff]
+   tool=vimdiff
+[difftool]
+   prompt=False
+
