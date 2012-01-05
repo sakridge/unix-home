@@ -1,0 +1,7 @@
+[user]
+	name = Stephen Akridge
+	email = sakridge@gmail.com
+[color]
+	ui = auto
+[core]
+   excludesfile = ~/.gitignore_global
