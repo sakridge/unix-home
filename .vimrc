@@ -1,7 +1,7 @@
 syn on
 set expandtab
 set shellslash
-colorscheme wombat
+colorscheme tir_black
 set nowrap
 set hls
 if has("unix")
@@ -26,3 +26,5 @@ set stl=%f\ %m\ Line:%l/%L[%p%%]\ Col:%v\ Buf:#%n\ [%b][0x%B]
 nnoremap <C-H> :Hexmode<CR>
 inoremap <C-H> <Esc>:Hexmode<CR>
 vnoremap <C-H> :<C-U>Hexmode<CR>
+
+map <F4> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
