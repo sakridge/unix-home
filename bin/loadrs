@@ -1,0 +1,6 @@
+rsync -vz --progress sakridge@sakridge-linux:$1/out/debug/target/product/msm8960/system/lib/libRS.so system/lib
+rsync -vz --progress sakridge@sakridge-linux:$1/out/debug/target/product/msm8960/system/lib/libOpenCL.so system/lib
+adb remount
+adb push system/lib/libRS.so /system/lib
+adb push system/lib/libOpenCL.so /system/lib
+adb reboot

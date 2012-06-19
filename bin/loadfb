@@ -1,0 +1,8 @@
+sudo fastboot flash boot boot.img
+sudo fastboot flash system system.img.ext4
+sudo fastboot flash userdata userdata.img.ext4
+sudo fastboot flash persist persist.img.ext4
+sudo fastboot flash recovery recovery.img
+sudo fastboot flash cache cache.img.ext4
+sudo fastboot flash tombstones tombstones.img.ext4
+sudo fastboot reboot

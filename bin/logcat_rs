@@ -1,0 +1,5 @@
+adb wait-for-device; 
+adb shell stop
+adb shell setprop log.redirect-stdio true
+adb shell start
+adb logcat RenderScript:I *:S 2>&1 | tee logcat.out
