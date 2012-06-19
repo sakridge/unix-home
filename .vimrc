@@ -22,7 +22,7 @@ filetype plugin indent on
 let g:ctrlp_mruf_relative = 1
 let g:ctrlp_custom_ignore = {
    \ 'dir':  '\.git$\|\.hg$\|\.svn$\',
-   \ 'file': '\.exe$\|\.so$\|\.dll$\|\.DS_Store$',
+   \ 'file': '\.o$\|\.pyc$\|\.swp$\|\.exe$\|\.so$\|\.dll$\|\.DS_Store$',
    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
    \ }
 
