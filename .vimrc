@@ -1,9 +1,20 @@
+if has('win32') || has('win64')
+   set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+   set lines=100 columns=100
+   let MRU_File = $USERPROFILE . "/.vim_mru_files"
+   let g:indexer_indexerListFilename = $USERPROFILE . "/.indexer_files"
+else
+   let MRU_File = "/local/mnt/workspace/sakridge/.vim_mru_files"
+   let g:indexer_indexerListFilename = "~/ws-sakridge/.indexer_files"
+endif
+
 syn on
 set hidden
 set history=2000
 set expandtab
 set shellslash
-colorscheme tir_black
+colorscheme wombat
+"colorscheme tir_black
 set nowrap
 set hls
 if has("unix")
@@ -17,12 +28,17 @@ set scrolloff=2
 set wildmode=longest,list
 set incsearch
 set smarttab
+set bs=2
 filetype plugin indent on
 
+let g:ctrlp_max_height = 20
+let g:ctrlp_regexp = 1
+let g:ctrlp_working_path_mode = 0
 let g:ctrlp_mruf_relative = 1
+let g:ctrlp_max_files = 0
 let g:ctrlp_custom_ignore = {
-   \ 'dir':  '\.git$\|\.hg$\|\.svn$\',
-   \ 'file': '\.o$\|\.pyc$\|\.swp$\|\.exe$\|\.so$\|\.dll$\|\.DS_Store$',
+   \ 'dir':  '\.repo$\|\.git$\|\.hg$\|\.svn$\',
+   \ 'file': '\.pyc$\|\.class$\|\.swp$\|\.P$\|\.o$\|\.exe$\|\.so$\|\.dll$\|\.DS_Store$',
    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
    \ }
 
@@ -30,7 +46,7 @@ let g:ctrlp_custom_ignore = {
 let mapleader = ","
 
 " Show whitespace
-set listchars=tab:>-,trail:·,eol:$
+"set listchars=tab:>-,trail:·,eol:$
 nmap <silent> <leader>s :set nolist!<CR>
 
 " Turn off search temporarily
@@ -47,4 +63,15 @@ inoremap <C-H> <Esc>:Hexmode<CR>
 vnoremap <C-H> :<C-U>Hexmode<CR>
 
 map <F4> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
+map <F3> :execute "! ack /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 nnoremap <silent> <F8> :TlistToggle<CR>
+
+
+if has('cscope')
+   set cscopetag cscopeverbose
+   if has('quickfix')
+      set cscopequickfix=s-,c-,d-,i-,t-,e-
+   endif
+endif
+
+
