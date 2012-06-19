@@ -15,6 +15,7 @@
 
 # OS generated files #
 ######################
+*.swp
 .DS_Store*
 ehthumbs.db
 Icon?
