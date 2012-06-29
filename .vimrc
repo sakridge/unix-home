@@ -4,8 +4,8 @@ if has('win32') || has('win64')
    let MRU_File = $USERPROFILE . "/.vim_mru_files"
    let g:indexer_indexerListFilename = $USERPROFILE . "/.indexer_files"
 else
-   let MRU_File = "/local/mnt/workspace/sakridge/.vim_mru_files"
-   let g:indexer_indexerListFilename = "~/ws-sakridge/.indexer_files"
+   let g:MRU_File = $HOME . "/.vim_mru_files"
+   let g:indexer_indexerListFilename = $HOME . "/.indexer_files"
 endif
 
 syn on
@@ -13,8 +13,7 @@ set hidden
 set history=2000
 set expandtab
 set shellslash
-colorscheme wombat
-"colorscheme tir_black
+colorscheme wombat256
 set nowrap
 set hls
 if has("unix")
