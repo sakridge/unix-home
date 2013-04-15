@@ -5,6 +5,7 @@
    ui = auto
 [core]
    excludesfile = ~/.gitignore_global
+   editor=vim
 [alias]
    tree=log --graph --decorate --pretty=format:'%h was %ae, %ar, message: %s' --abbrev-commit
    d=difftool
