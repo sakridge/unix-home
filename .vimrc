@@ -1,3 +1,6 @@
+runtime bundle/vim-pathogen/autoload/pathogen.vim
+execute pathogen#infect()
+
 if has('win32') || has('win64')
    set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
    set lines=100 columns=100
@@ -73,4 +76,8 @@ if has('cscope')
    endif
 endif
 
+if has('persistent_undo')
+    set undofile
+    set undodir=$HOME/.vim/undo
+endif
 
