@@ -40,7 +40,7 @@ let g:ctrlp_mruf_relative = 1
 let g:ctrlp_max_files = 0
 let g:ctrlp_custom_ignore = {
    \ 'dir':  '\.repo$\|\.git$\|\.hg$\|\.svn$\|target$',
-   \ 'file': '\.pyc$\|\.class$\|\.swp$\|\.P$\|\.o$\|\.exe$\|\.so$\|\.dll$\|\.DS_Store$',
+   \ 'file': '\.pyc$\|\.class$\|\.swp$\|\.P$\|\.o$\|\.exe$\|\.so$\|\.dll$\|\.DS_Store$\|\.gz$\|\.a$',
    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
    \ }
 
