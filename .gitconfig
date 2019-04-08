@@ -9,6 +9,8 @@
 [alias]
    tree=log --graph --decorate --pretty=format:'%h was %ae, %ar, message: %s' --abbrev-commit
    d=difftool
+   bvv=branch -vv
+   s=status -uno
 [diff]
    tool=vimdiff
 [difftool]
