@@ -9,6 +9,10 @@ def update_lines(num, lines, line):
         lines[num] = []
     lines[num].append(line)
 
+if len(sys.argv) != 2:
+    print("Usage: gb.py <branch>")
+    exit(1)
+
 branch = subprocess.check_output(["git", "branch", "-vv"])
 lines = {}
 for line in branch.splitlines():
