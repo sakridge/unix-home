@@ -39,7 +39,7 @@ let g:ctrlp_working_path_mode = 0
 let g:ctrlp_mruf_relative = 1
 let g:ctrlp_max_files = 0
 let g:ctrlp_custom_ignore = {
-   \ 'dir':  '\.repo$\|\.git$\|\.hg$\|\.svn$\|target$\|farf$',
+   \ 'dir':  'farf$\|\.repo$\|\.git$\|\.hg$\|\.svn$\|target$\|farf$',
    \ 'file': '\.pyc$\|\.class$\|\.swp$\|\.P$\|\.o$\|\.exe$\|\.so$\|\.dll$\|\.DS_Store$\|\.gz$\|\.a$',
    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
    \ }

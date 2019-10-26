@@ -13,4 +13,4 @@ clone_or_update () {
 clone_or_update https://github.com/tpope/vim-pathogen.git bundle/vim-pathogen
 clone_or_update https://github.com/kien/ctrlp.vim.git bundle/ctrlp.vim
 clone_or_update https://github.com/rust-lang/rust.vim.git bundle/rust.vim
-clone_or_update https://github.com/ldx/vim-indentfinder.git bundle/vim-indentfinder
+clone_or_update https://github.com/sakridge/vim-indentfinder.git bundle/vim-indentfinder
