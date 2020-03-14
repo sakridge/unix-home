@@ -11,6 +11,8 @@
    d=difftool
    bvv=branch -vv
    s=status -uno
+   lu=log @{u}..
+   lup=log -p @{u}..
 [diff]
    tool=vimdiff
 [difftool]
