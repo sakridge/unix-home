@@ -5,7 +5,7 @@ import re
 import sys
 
 if len(sys.argv) != 2:
-    print("Usage: gb.py <branch>")
+    print("Usage: git-search.py <search-string>")
     exit(1)
 
 def update_lines(num, lines, line):
