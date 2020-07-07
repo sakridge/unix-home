@@ -13,6 +13,7 @@
    s=status -uno
    lu=log @{u}..
    lup=log -p @{u}..
+   co=checkout
 [diff]
    tool=vimdiff
 [difftool]
