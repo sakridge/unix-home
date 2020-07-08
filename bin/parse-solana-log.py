@@ -2,6 +2,7 @@
 #from dateutil import parser
 from datetime import datetime
 
+import json
 import sys
 import re
 
@@ -13,48 +14,65 @@ def get_time(line):
     time_str = time_str[:-4]
     return datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%f")
 
-slots_full = {}
-slots_frozen = {}
-slots_voted = {}
-slots_new_fork = {}
-slots_retransmit = {}
-retransmit_time = None
-with open(sys.argv[1]) as fh:
-    for line in fh.readlines():
-        if "is full" in line:
-            time = get_time(line)
-            m = re.search(r"slot (\d+) is full", line)
-            slot = int(m.group(1))
-            slots_full[slot] = time
-        elif "bank frozen" in line:
-            m = re.search(r"bank frozen: (\d+)", line)
-            slot = int(m.group(1))
-            time = get_time(line)
-            slots_frozen[slot] = time
-        elif "voting:" in line:
-            m = re.search(r"voting: (\d+)", line)
-            slot = int(m.group(1))
-            time = get_time(line)
-            slots_voted[slot] = time
-        elif "new fork:" in line:
-            m = re.search(r"new fork:(\d+)", line)
-            slot = int(m.group(1))
-            time = get_time(line)
-            slots_new_fork[slot] = time
-        elif "packets_by_slot" in line:
-            if not "}" in line:
-                retransmit_time = get_time(line)
-        elif "}" in line and retransmit_time is not None:
-            retransmit_time = None
-        elif retransmit_time is not None:
-            line = line.strip(" ")
-            m = re.search("(\d+): ", line)
-            if m:
+all_slots = {}
+data = {}
+for input_file in sys.argv[1:]:
+    data[input_file] = {}
+    data[input_file]['slots_full'] = {}
+    data[input_file]['slots_frozen'] = {}
+    data[input_file]['slots_voted'] = {}
+    data[input_file]['slots_new_fork'] = {}
+    data[input_file]['slots_retransmit'] = {}
+    data[input_file]['slots_new_root'] = {}
+    print("processing {}".format(input_file))
+    with open(input_file) as fh:
+        for line in fh.readlines():
+            if "is full" in line:
+                time = get_time(line)
+                m = re.search(r"slot (\d+) is full", line)
                 slot = int(m.group(1))
-                if not slot in slots_retransmit:
-                    slots_retransmit[slot] = retransmit_time
-            else:
-                retransmit_time = None
+                all_slots[slot] = True
+                data[input_file]['slots_full'][slot] = time
+            elif "bank frozen" in line and "replay_stage" in line:
+                m = re.search(r"bank frozen: (\d+)", line)
+                slot = int(m.group(1))
+                time = get_time(line)
+                all_slots[slot] = True
+                data[input_file]['slots_frozen'][slot] = time
+            elif "voting:" in line:
+                m = re.search(r"voting: (\d+)", line)
+                slot = int(m.group(1))
+                time = get_time(line)
+                all_slots[slot] = True
+                data[input_file]['slots_voted'][slot] = time
+            elif "new fork:" in line:
+                m = re.search(r"new fork:(\d+)", line)
+                slot = int(m.group(1))
+                time = get_time(line)
+                all_slots[slot] = True
+                data[input_file]['slots_new_fork'][slot] = time
+            elif "packets_by_slot" in line:
+                retransmit_time = get_time(line)
+                line_split = line.split("packets_by_slot:")
+                if "," in line_split[1]:
+                    items = line_split[1].split(",")
+                    for item in items:
+                        item = item.strip(" \n")
+                        item = item.strip("\{")
+                        item = item.strip("\}")
+                        #print(item)
+                        #print(line)
+                        slot_and_count = item.split(":")
+                        slot = int(slot_and_count[0])
+                        count = int(slot_and_count[1])
+                        if not (slot in data[input_file]['slots_retransmit']):
+                            data[input_file]['slots_retransmit'][slot] = retransmit_time
+            elif "new root" in line:
+                m = re.search(r"new root (\d+)", line)
+                slot = int(m.group(1))
+                time = get_time(line)
+                all_slots[slot] = True
+                data[input_file]['slots_new_root'][slot] = time
 
 def pretty_time_delta(time_delta):
     seconds = time_delta.total_seconds()
@@ -69,27 +87,70 @@ def pretty_time_delta(time_delta):
     nanos = micros * 1000
     return '{:.1f}ns'.format(nanos)
 
-for (slot, time) in slots_full.items():
-    print("{} full: {}".format(slot, datetime.strftime(time, "%d %H:%M:%S.%f")))
-    if slot in slots_retransmit:
-        time_retransmit = slots_retransmit[slot]
-        diff = slots_full[slot] - time_retransmit
-        print("   retransmit: {}".format(pretty_time_delta(diff)))
-    if slot in slots_new_fork:
-        time_new_fork = slots_new_fork[slot]
-        diff = time_new_fork - slots_full[slot]
-        print("   new_fork: {}".format(pretty_time_delta(diff)))
-    if slot in slots_frozen:
-        time_frozen = slots_frozen[slot]
-        if slot in slots_new_fork:
-            diff = time_frozen - slots_new_fork[slot]
-        elif slot in slots_retransmit:
-            diff = time_frozen - slots_retransmit[slot]
+def pretty_time(time):
+    #return datetime.strftime(time, "%d %H:%M:%S.%f")
+    return datetime.strftime(time, "%H:%M:%S")
+
+def print_time(time):
+    print("{:10}".format(pretty_time(time)), end=" ")
+
+for (file_name, entry) in data.items():
+    print("{:88}".format(file_name[:5]), end=" | ")
+print("")
+for slot in sorted(all_slots.keys()):
+    print("slot {}".format(slot), end=" ")
+    for (file_name, entry) in data.items():
+        if slot in entry['slots_full']:
+            time = entry['slots_full'][slot]
+            print("full: {:10}".format(pretty_time(time)), end=" ")
         else:
-            diff = time_frozen - slots_full[slot]
-        print("   frozen: {}".format(pretty_time_delta(diff)))
-    if slot in slots_voted:
-        time_voted = slots_voted[slot]
-        diff = time_voted - slots_frozen[slot]
-        print("   voted: {}".format(pretty_time_delta(diff)))
-    #print("{} full: {} frozen: {} voted: {}".format(time, slots_frozen[slot], slots_voted[slot]))
+            print("no_full{:9}".format(""), end=" ")
+        if slot in entry['slots_retransmit']:
+            time_retransmit = entry['slots_retransmit'][slot]
+            #if slot in entry['slots_full']:
+            #    diff = entry['slots_full'][slot] - time_retransmit
+            #    print("retransmit(d): {}".format(pretty_time_delta(diff)), end=" ")
+            #else:
+            #    print("retransmit: {}".format(pretty_time(time_retransmit)), end=" ")
+            print_time(time_retransmit)
+        else:
+            print("no_retrans", end=" ")
+        if slot in entry['slots_new_fork']:
+            time_new_fork = entry['slots_new_fork'][slot]
+            #if slot in entry['slots_full']:
+            #    diff = time_new_fork - entry['slots_full'][slot]
+            #    print("new_fork: {}".format(pretty_time_delta(diff)), end=" ")
+            print_time(time_new_fork)
+        else:
+            print("no new_for", end=" ")
+        if slot in entry['slots_frozen']:
+            time_frozen = entry['slots_frozen'][slot]
+            #if slot in entry['slots_new_fork']:
+            #    diff = time_frozen - entry['slots_new_fork'][slot]
+            #elif slot in entry['slots_retransmit']:
+            #    diff = time_frozen - entry['slots_retransmit'][slot]
+            #else:
+            #    diff = time_frozen - entry['slots_full'][slot]
+            #print("frozen: {}".format(pretty_time_delta(diff)), end=" ")
+            print_time(time_frozen)
+        else:
+            print("no frozen ", end=" ")
+        if slot in entry['slots_voted']:
+            time_voted = entry['slots_voted'][slot]
+            #diff = None
+            #if slot in entry['slots_frozen']:
+            #    diff = time_voted - entry['slots_frozen'][slot]
+            #else:
+            #    diff = time_voted - entry['slots_full'][slot]
+            #print("voted: {}".format(pretty_time_delta(diff)), end=" ")
+            print_time(time_voted)
+        else:
+            print("no voted  ", end=" ")
+        if slot in entry['slots_new_root']:
+            time_rooted = entry['slots_new_root'][slot]
+            print_time(time_rooted)
+        else:
+            print("no root   ", end=" ")
+        #print("{} full: {} frozen: {} voted: {}".format(time, slots_frozen[slot], slots_voted[slot]))
+        print("   |   ", end=" ")
+    print("")
