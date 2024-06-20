@@ -2,6 +2,10 @@
 
 import sys
 
+if len(sys.argv) != 2:
+    print("Error, please provide comma-separated list of numbers: 1,2,3")
+    exit(1)
+
 nums = sys.argv[1].split(",")
 total = 0
 for num in nums:
