@@ -8,7 +8,7 @@ from datetime import datetime
 def read_csv_files(acquisitions_file, sales_file):
     acquisitions = []
     sales = []
-    
+
     # Read acquisitions CSV
     with open(acquisitions_file, mode='r') as file:
         reader = csv.DictReader(file)
@@ -18,7 +18,7 @@ def read_csv_files(acquisitions_file, sales_file):
                 "price": float(row["price"]),
                 "quantity": float(row["quantity"])
             })
-    
+
     # Read sales CSV
     with open(sales_file, mode='r') as file:
         reader = csv.DictReader(file)
@@ -28,7 +28,7 @@ def read_csv_files(acquisitions_file, sales_file):
                 "price": float(row["price"]),
                 "quantity": float(row["quantity"])
             })
-    
+
     return acquisitions, sales
 
 # Calculate profits and losses
@@ -59,12 +59,12 @@ def calculate_transactions(acquisitions, sales, verbose):
             if sale["date"] >= acquisition["date"] and acquisition["quantity"] > 0:
                 # Determine the quantity sold from this acquisition
                 quantity_sold = min(quantity_to_sell, acquisition["quantity"])
-                
+
                 # Calculate profit or loss for the quantity sold
                 profit_loss = (sale["price"] - acquisition["price"]) * quantity_sold
 
                 total_profit_loss += profit_loss
-                
+
                 new_transactions.append({
                     "acquisition_date": acquisition["date"],
                     "sale_date": sale["date"],
@@ -129,9 +129,9 @@ if __name__ == "__main__":
     parser.add_argument('-v', '--verbose', action='store_true', help="Print more information")
     parser.add_argument('acquisitions_file', help="Path to the CSV file containing acquisitions data.")
     parser.add_argument('sales_file', help="Path to the CSV file containing sales data.")
-    
+
     args = parser.parse_args()
-    
+
     # Run the main function
     main(args.acquisitions_file, args.sales_file, args.verbose)
 
