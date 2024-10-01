@@ -9,6 +9,7 @@ def read_csv_files(acquisitions_file, sales_file):
     acquisitions = []
     sales = []
 
+    print("Reading acquisitions..")
     # Read acquisitions CSV
     with open(acquisitions_file, mode='r') as file:
         reader = csv.DictReader(file)
@@ -19,6 +20,7 @@ def read_csv_files(acquisitions_file, sales_file):
                 "quantity": float(row["quantity"])
             })
 
+    print("Reading sales..")
     # Read sales CSV
     with open(sales_file, mode='r') as file:
         reader = csv.DictReader(file)
@@ -104,6 +106,20 @@ def calculate_transactions(acquisitions, sales, verbose):
     # Sort by lowest profit or highest loss
     transactions.sort(key=lambda x: x["total_profit_loss"])
 
+    print("")
+    remaining_acquisitions.sort(key=lambda x: x["date"])
+    remaining_quantity = 0
+    total_cost = 0
+    print("date,quantity,price")
+    for acq in remaining_acquisitions:
+        if acq["quantity"] > 0:
+            print("{},{:.3f},{:.2f}".format(acq["date"].strftime("%Y-%m-%d %H:%M:%S UTC"), acq["quantity"], acq["price"]))
+            remaining_quantity += acq["quantity"]
+            total_cost += acq["quantity"] * acq["price"]
+    average_price = total_cost / remaining_quantity
+    print(f"remaining sol: {remaining_quantity:,.2f} avg price: {average_price:,.2f}")
+    print("")
+
     return transactions
 
 def main(acquisitions_file, sales_file, verbose):
@@ -113,13 +129,22 @@ def main(acquisitions_file, sales_file, verbose):
     # Calculate transactions
     transactions = calculate_transactions(acquisitions, sales, verbose)
 
+    print_human_transactions = False
+    print_csv = True
     if transactions:
-        print("Transactions sorted by lowest profit or highest loss:")
-        for trans in transactions:
-            profit_loss = "Profit" if trans['total_profit_loss'] > 0 else "Loss"
-            print(f"Acquired on {trans['acquisition_date']} at ${trans['acquisition_price']}\n"
-                  f"  and sold on {trans['sale_date']} at ${trans['sale_price']}\n"
-                  f"  for quantity {trans['quantity_sold']:,.2f} resulting in a {profit_loss} of ${trans['total_profit_loss']:,.2f}")
+        if print_human_transactions:
+            print("Transactions sorted by lowest profit or highest loss:")
+            for trans in transactions:
+                profit_loss = "Profit" if trans['total_profit_loss'] > 0 else "Loss"
+                print(f"Acquired on {trans['acquisition_date']} at ${trans['acquisition_price']}\n"
+                      f"  and sold on {trans['sale_date']} at ${trans['sale_price']}\n"
+                      f"  for quantity {trans['quantity_sold']:,.2f} resulting in a {profit_loss} of ${trans['total_profit_loss']:,.2f}")
+
+        if print_csv:
+            transactions.sort(key=lambda x: x["sale_date"])
+            print("sale_date,quantity,sale_price,acquired_date,acquired_price,profit_loss")
+            for trans in transactions:
+                print(f"{trans['sale_date']},{trans['quantity_sold']:.3f},{trans['sale_price']},{trans['acquisition_date']},{trans['acquisition_price']},{trans['total_profit_loss']:.2f}")
     else:
         print("No transactions found.")
 
@@ -127,8 +152,8 @@ if __name__ == "__main__":
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Calculate profit and loss from asset sales.")
     parser.add_argument('-v', '--verbose', action='store_true', help="Print more information")
-    parser.add_argument('acquisitions_file', help="Path to the CSV file containing acquisitions data.")
-    parser.add_argument('sales_file', help="Path to the CSV file containing sales data.")
+    parser.add_argument('acquisitions_file', help="Path to the CSV file containing acquisitions data. Columns should be: date,quantity,price")
+    parser.add_argument('sales_file', help="Path to the CSV file containing sales data. Columns should be: date,quantity,price")
 
     args = parser.parse_args()
 
